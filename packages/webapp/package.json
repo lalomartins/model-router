@@ -9,7 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "lit": "^3.3.2"
+    "lit": "^3.3.2",
+    "@model-router/webcomponents": "0.0.1"
   },
   "devDependencies": {
     "vite": "^7.3.1"

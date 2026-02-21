@@ -1,11 +1,11 @@
-import { Observable } from 'rxjs';
+import {Observable} from 'rxjs';
 
 // returns Observable that emits partial outputs
-export function httpModelAdapter(modelName, prompt) {
+export function httpModelAdapter (modelName, prompt) {
   return new Observable(subscriber => {
     let controller;
     let abortSupported = true;
-    
+
     try {
       controller = new AbortController();
     } catch (e) {
@@ -14,7 +14,7 @@ export function httpModelAdapter(modelName, prompt) {
 
     const fetchOptions = {
       method: 'POST',
-      body: JSON.stringify({ prompt })
+      body: JSON.stringify({prompt}),
     };
 
     if (abortSupported && controller) {
@@ -27,13 +27,13 @@ export function httpModelAdapter(modelName, prompt) {
         const decoder = new TextDecoder();
 
         const readChunk = () => {
-          reader.read().then(({ done, value }) => {
+          reader.read().then(({done, value}) => {
             if (done) {
               subscriber.complete();
               return;
             }
 
-            const chunk = decoder.decode(value, { stream: true });
+            const chunk = decoder.decode(value, {stream: true});
             subscriber.next(chunk);
             readChunk();
           }).catch(err => subscriber.error(err));

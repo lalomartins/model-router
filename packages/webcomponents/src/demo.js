@@ -1,30 +1,29 @@
-import { LitElement, css, html } from 'lit'
+import {LitElement, css, html} from 'lit';
 
 /**
  * Wrap all components in a basic demo.
  */
 export class RouterDemo extends LitElement {
-  static get properties() {
-    return {
-    }
+  static get properties () {
+    return {};
   }
 
-  constructor() {
-    super()
+  constructor () {
+    super();
   }
 
-  render() {
+  render () {
     return html`
         <div>
             <p>Hello World</p>
         </div>
-    `
+    `;
   }
 
-  static get styles() {
+  static get styles () {
     return css`
-    `
+    `;
   }
 }
 
-window.customElements.define('router-demo', RouterDemo)
+window.customElements.define('router-demo', RouterDemo);

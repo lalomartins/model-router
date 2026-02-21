@@ -1,0 +1,10 @@
+{
+  "name": "@model-router/webcomponents",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "lit": "^3.3.2",
+    "@model-router/router": "0.0.1"
+  }
+}

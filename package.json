@@ -1,0 +1,16 @@
+{
+  "name": "model-router",
+  "version": "0.0.1",
+  "description": "",
+  "workspaces": [
+    "./packages/router",
+    "./packages/webcomponents",
+    "./packages/webapp"
+  ],
+  "private": true,
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev": "npm run dev -w @model-router/webapp",
+    "test": "npm run test --workspaces"
+  }
+}

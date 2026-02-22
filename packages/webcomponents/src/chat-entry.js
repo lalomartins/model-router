@@ -54,7 +54,6 @@ export class ChatEntry extends LitElement {
             padding: 10px 14px;
             border-radius: 12px;
             line-height: 1.4;
-            word-wrap: break-word;
         }
 
         .chat-row.response .bubble {
@@ -67,6 +66,11 @@ export class ChatEntry extends LitElement {
             background: #dff7e2; /* light green */
             color: #063b14;
             border-top-right-radius: 4px;
+        }
+
+        .text {
+            word-wrap: break-word;
+            white-space: pre-wrap;
         }
 
         .ts {

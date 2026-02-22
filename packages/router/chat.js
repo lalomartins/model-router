@@ -43,14 +43,15 @@ class Chat {
     this.runPrompt(text).subscribe({
       next: (chunk) => {
         const entries = [...this.entries$.value];
-        // update the response entry at index by appending the chunk; responses are not prompts
-        entries[index] = new ChatEntry(entries[index].text + chunk, false, entries[index].timestamp);
+        const entry = entries[index];
+        const text = entry.text.substring(0, entry.text.length - 1) + chunk + '…'
+        entries[index] = new ChatEntry(text, false, entry.timestamp);
         this.entries$.next(entries);
       },
       complete: () => {
         const entries = [...this.entries$.value];
-        // finalize response timestamp; keep isPrompt false
-        entries[index] = new ChatEntry(entries[index].text, false, new Date());
+        const entry = entries[index];
+        entries[index] = new ChatEntry(entry.text.substring(0, entry.text.length - 1), false, new Date());
         this.entries$.next(entries);
         this.busy$.next(false);
       },

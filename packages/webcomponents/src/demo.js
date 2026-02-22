@@ -1,6 +1,5 @@
 import {LitElement, css, html} from 'lit';
-import {ChatEntry} from '@model-router/router/chat.js';
-import {dummyModelAdapter} from '@model-router/router/adapters/dummyAdapter.js';
+import {Chat, ChatEntry} from '@model-router/router/chat.js';
 
 const dummyChat = [
   new ChatEntry('Hello World!', true, new Date('2026-02-22T01:05:00')),
@@ -10,47 +9,56 @@ const dummyChat = [
 ];
 
 /**
- * Chat demo component
+ * Wrap all components in a basic demo.
  */
 export class RouterDemo extends LitElement {
   static get properties () {
-    return {
-      chat: {type: Array},
-      inputValue: {type: String},
-    };
+    return {};
   }
 
   constructor () {
     super();
-    // copy initial dummy chat
-    this.chat = [...dummyChat];
-    this.inputValue = '';
-    this._timers = [];
-    this._subs = [];
+    // expose only chat instance
+    this.chat = new Chat([...dummyChat]);
+    this._entriesSub = null;
+    this._promptSub = null;
+  }
+
+  connectedCallback () {
+    super.connectedCallback();
   }
 
   disconnectedCallback () {
     super.disconnectedCallback();
-    // clear any pending timers and subscriptions
-    for (const t of this._timers) clearTimeout(t);
-    this._timers = [];
-    for (const s of this._subs) {
-      try { s.unsubscribe(); } catch (e) {}
+    if (this._entriesSub) {
+      try { this._entriesSub.unsubscribe(); } catch (e) {}
+      this._entriesSub = null;
     }
-    this._subs = [];
+    if (this._promptSub) {
+      try { this._promptSub.unsubscribe(); } catch (e) {}
+      this._promptSub = null;
+    }
   }
 
   firstUpdated () {
-    // ensure scroll is at bottom on initial render
     this._scrollToBottom();
-  }
+    if (this.chat && this.chat.entries$) {
+      this._entriesSub = this.chat.entries$.subscribe(() => {
+        // entries changed, request an update so the template reads from this.chat.entries$.value
+        this.requestUpdate();
+        // scroll to bottom after render
+        this.updateComplete.then(() => this._scrollToBottom());
+      });
+    }
 
-  updated (changed) {
-    if (changed.has('chat')) {
-      // scroll to bottom when chat updates
-      this.updateComplete.then(() => this._scrollToBottom());
+    if (this.chat && this.chat.prompt$) {
+      this._promptSub = this.chat.prompt$.subscribe(() => {
+        // prompt changed, update the textarea value by requesting an update
+        this.requestUpdate();
+      });
     }
   }
+  // no reactive properties to track; updates are driven by BehaviorSubject subscriptions
 
   _scrollToBottom () {
     const scroller = this.renderRoot.querySelector('.chat-history');
@@ -66,11 +74,11 @@ export class RouterDemo extends LitElement {
   }
 
   _onInput (e) {
-    this.inputValue = e.target.value;
+    const v = e.target.value;
+    if (this.chat && this.chat.prompt$) this.chat.prompt$.next(v);
   }
 
   _onKeyDown (e) {
-    // Enter to send, Shift+Enter for newline
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       this._onSubmit(e);
@@ -79,60 +87,15 @@ export class RouterDemo extends LitElement {
 
   _onSubmit (e) {
     if (e && e.preventDefault) e.preventDefault();
-    const text = (this.inputValue || '').trim();
+    const text = ((this.chat && this.chat.prompt$ && this.chat.prompt$.value) || '').trim();
     if (!text) return;
 
-    // Append user's message (isPrompt: true)
-    const userEntry = new ChatEntry(text, true, new Date());
-    this.chat = [...this.chat, userEntry];
-    this.inputValue = '';
+    if (this.chat && typeof this.chat.onPrompt === 'function') {
+      this.chat.onPrompt(text);
+    }
 
-    // Ask the dummy adapter for a response. Buffer its chunks, then stream them into the UI.
-    const bufferParts = [];
-    const sub = dummyModelAdapter('dummy', text).subscribe({
-      next: (chunk) => {
-        bufferParts.push(String(chunk));
-      },
-      error: (err) => {
-        // append an error response
-        const errEntry = new ChatEntry('Error generating response', false, new Date());
-        this.chat = [...this.chat, errEntry];
-      },
-      complete: () => {
-        const full = bufferParts.join('');
-        // stream the response words into a new chat entry
-        this._streamResponse(full);
-      },
-    });
-
-    this._subs.push(sub);
-  }
-
-  _streamResponse (fullText) {
-    const words = fullText.split(/\s+/).filter(Boolean);
-    const entry = new ChatEntry('', false, new Date());
-    this.chat = [...this.chat, entry];
-    // Update the last entry incrementally
-    let acc = '';
-    words.forEach((w, i) => {
-      const t = setTimeout(() => {
-        acc = acc ? acc + ' ' + w : w;
-        const updated = new ChatEntry(acc, false, new Date());
-        // Replace last entry
-        const newChat = this.chat.slice(0, -1).concat(updated);
-        this.chat = newChat;
-      }, 40 * i);
-      this._timers.push(t);
-    });
-    // update timestamp at end
-    const finishTimeout = setTimeout(() => {
-      const last = this.chat[this.chat.length - 1];
-      if (last) {
-        const updated = new ChatEntry(last.text, last.isPrompt, new Date());
-        this.chat = this.chat.slice(0, -1).concat(updated);
-      }
-    }, 40 * words.length + 20);
-    this._timers.push(finishTimeout);
+    // clear prompt
+    if (this.chat && this.chat.prompt$) this.chat.prompt$.next('');
   }
 
   render () {
@@ -140,7 +103,7 @@ export class RouterDemo extends LitElement {
       <div class="page">
         <div class="box">
           <div class="chat-history" role="log">
-            ${this.chat.map(item => html`
+            ${((this.chat && this.chat.entries$ && this.chat.entries$.value) || []).map(item => html`
               <div class="chat-row ${item.isPrompt ? 'prompt' : 'response'}">
                 <div class="bubble">
                   <div class="text">${item.text}</div>
@@ -153,7 +116,7 @@ export class RouterDemo extends LitElement {
           <form class="input-row" @submit=${this._onSubmit}>
             <textarea
               class="message-input"
-              .value=${this.inputValue}
+              .value=${(this.chat && this.chat.prompt$ && this.chat.prompt$.value) || ''}
               @input=${this._onInput}
               @keydown=${this._onKeyDown}
               placeholder="Type a message... (Shift+Enter for newline)"

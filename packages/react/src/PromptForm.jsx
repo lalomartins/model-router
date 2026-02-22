@@ -1,5 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 
+/** Allows the user to send a prompt to the model.
+ *
+ * The message is sent to the model when the user presses Enter or clicks the Send button.
+ * Shift-Enter can be used to insert a line break instead.
+ */
 export const PromptForm = ({ chat }) => {
   const textareaRef = useRef(null);
   const [promptValue, setPromptValue] = React.useState(

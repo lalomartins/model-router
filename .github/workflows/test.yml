@@ -34,8 +34,11 @@ jobs:
       - name: Setup Playwright
         run: npx playwright install
 
-      - name: Build storybook
+      - name: Build lit storybook
         run: npm run build-storybook -w @model-router/webcomponents
+
+      - name: Build react storybook
+        run: npm run build-storybook -w @model-router/react
 
       - name: Run tests
         run: npm test

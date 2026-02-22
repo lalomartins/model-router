@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { ChatEntry } from './ChatEntry';
 
+/** Displays a chat history as a scrollable list of chat entries.
+ */
 export const ChatHistory = ({ chat }) => {
   const scrollerRef = useRef(null);
   const [entries, setEntries] = React.useState(

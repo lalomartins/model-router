@@ -24,6 +24,8 @@ jobs:
           package-manager-cache: false
 
       - name: Brute force platform dependencies
+        # This defeats the point of the package lock and may introduce subtle bugs,
+        # but for a personal, solo project it's a saner alternative than switching to pnpm/yarn.
         run: rm -rf node_modules package-lock.json
 
       - name: Install dependencies

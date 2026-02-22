@@ -62,7 +62,7 @@ export class ChatHistory extends LitElement {
         .chat-history {
             padding: 16px;
             overflow: auto;
-            flex: 1 1 auto;
+            height: 100%;
             display: flex;
             flex-direction: column;
             gap: 12px;

@@ -24,7 +24,7 @@ jobs:
           package-manager-cache: false
 
       - name: Brute force platform dependencies
-        run: rm -r node_modules
+        run: rm -rf node_modules package-lock.json
 
       - name: Install dependencies
         run: npm install

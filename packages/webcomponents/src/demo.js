@@ -1,5 +1,6 @@
 import {LitElement, css, html} from 'lit';
 import {Chat, ChatEntry} from '@model-router/router/chat.js';
+import './prompt-form.js';
 
 const dummyChat = [
   new ChatEntry('Hello World!', true, new Date('2026-02-22T01:05:00')),
@@ -21,7 +22,6 @@ export class RouterDemo extends LitElement {
     // expose only chat instance
     this.chat = new Chat([...dummyChat]);
     this._entriesSub = null;
-    this._promptSub = null;
   }
 
   connectedCallback () {
@@ -34,10 +34,6 @@ export class RouterDemo extends LitElement {
       try { this._entriesSub.unsubscribe(); } catch (e) {}
       this._entriesSub = null;
     }
-    if (this._promptSub) {
-      try { this._promptSub.unsubscribe(); } catch (e) {}
-      this._promptSub = null;
-    }
   }
 
   firstUpdated () {
@@ -48,13 +44,6 @@ export class RouterDemo extends LitElement {
         this.requestUpdate();
         // scroll to bottom after render
         this.updateComplete.then(() => this._scrollToBottom());
-      });
-    }
-
-    if (this.chat && this.chat.prompt$) {
-      this._promptSub = this.chat.prompt$.subscribe(() => {
-        // prompt changed, update the textarea value by requesting an update
-        this.requestUpdate();
       });
     }
   }
@@ -113,18 +102,7 @@ export class RouterDemo extends LitElement {
             `)}
           </div>
 
-          <form class="input-row" @submit=${this._onSubmit}>
-            <textarea
-              class="message-input"
-              .value=${(this.chat && this.chat.prompt$ && this.chat.prompt$.value) || ''}
-              @input=${this._onInput}
-              @keydown=${this._onKeyDown}
-              placeholder="Type a message... (Shift+Enter for newline)"
-              aria-label="Type a message"
-              rows="2"
-            ></textarea>
-            <button type="submit">Send</button>
-          </form>
+          <prompt-form .chat=${this.chat}></prompt-form>
         </div>
       </div>
     `;
@@ -217,38 +195,6 @@ export class RouterDemo extends LitElement {
         .chat-row.prompt .ts {
             margin-left: auto;
             text-align: right;
-        }
-
-        .input-row {
-            display: flex;
-            gap: 8px;
-            padding: 12px;
-            border-top: 1px solid rgba(0, 0, 0, 0.08);
-            background: rgba(0, 0, 0, 0.02);
-        }
-
-        .message-input {
-            flex: 1 1 auto;
-            padding: 8px 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 14px;
-            resize: vertical;
-            min-height: 40px;
-            max-height: 160px;
-        }
-
-        button[type="submit"] {
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: none;
-            background: #1976d2;
-            color: white;
-            cursor: pointer;
-        }
-
-        button[type="submit"]:hover {
-            opacity: 0.95;
         }
     `;
   }

@@ -33,3 +33,6 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Build storybook
+        run: npm run build-storybook -w @model-router/webcomponents

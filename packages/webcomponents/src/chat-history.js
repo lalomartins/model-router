@@ -2,19 +2,19 @@ import {LitElement, html, css} from 'lit';
 import './chat-entry.js';
 
 export class ChatHistory extends LitElement {
-  static get properties() {
+  static get properties () {
     return {
       chat: {type: Object},
     };
   }
 
-  constructor() {
+  constructor () {
     super();
     this.chat = null;
     this._entriesSub = null;
   }
 
-  disconnectedCallback() {
+  disconnectedCallback () {
     super.disconnectedCallback();
     if (this._entriesSub) {
       try { this._entriesSub.unsubscribe(); } catch (e) {}
@@ -22,7 +22,7 @@ export class ChatHistory extends LitElement {
     }
   }
 
-  updated(changed) {
+  updated (changed) {
     if (changed.has('chat')) {
       if (this._entriesSub) {
         try { this._entriesSub.unsubscribe(); } catch (e) {}
@@ -37,36 +37,36 @@ export class ChatHistory extends LitElement {
     }
   }
 
-  firstUpdated() {
+  firstUpdated () {
     this._scrollToBottom();
   }
 
-  _scrollToBottom() {
+  _scrollToBottom () {
     const scroller = this.renderRoot.querySelector('.chat-history');
     if (scroller) scroller.scrollTop = scroller.scrollHeight;
   }
 
-  render() {
+  render () {
     const entries = (this?.chat?.entries$?.value || []);
     return html`
-      <div class="chat-history" role="log">
-        ${entries.map(item => html`
-          <chat-entry .entry=${item}></chat-entry>
-        `)}
-      </div>
+        <div class="chat-history" role="log">
+            ${entries.map(item => html`
+                <chat-entry .entry=${item}></chat-entry>
+            `)}
+        </div>
     `;
   }
 
-  static get styles() {
+  static get styles () {
     return css`
-      .chat-history {
-          padding: 16px;
-          overflow: auto;
-          flex: 1 1 auto;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-      }
+        .chat-history {
+            padding: 16px;
+            overflow: auto;
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
     `;
   }
 }

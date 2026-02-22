@@ -1,23 +1,23 @@
 import {LitElement, html, css} from 'lit';
 
 export class PromptForm extends LitElement {
-  static get properties() {
+  static get properties () {
     return {
       chat: {type: Object},
     };
   }
 
-  constructor() {
+  constructor () {
     super();
     this.chat = null;
     this._promptSub = null;
   }
 
-  connectedCallback() {
+  connectedCallback () {
     super.connectedCallback();
   }
 
-  disconnectedCallback() {
+  disconnectedCallback () {
     super.disconnectedCallback();
     if (this._promptSub) {
       try { this._promptSub.unsubscribe(); } catch (e) {}
@@ -25,7 +25,7 @@ export class PromptForm extends LitElement {
     }
   }
 
-  updated(changed) {
+  updated (changed) {
     if (changed.has('chat')) {
       if (this._promptSub) {
         try { this._promptSub.unsubscribe(); } catch (e) {}
@@ -37,19 +37,19 @@ export class PromptForm extends LitElement {
     }
   }
 
-  _onInput(e) {
+  _onInput (e) {
     const v = e.target.value;
     if (this.chat && this.chat.prompt$) this.chat.prompt$.next(v);
   }
 
-  _onKeyDown(e) {
+  _onKeyDown (e) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       this._onSubmit(e);
     }
   }
 
-  _onSubmit(e) {
+  _onSubmit (e) {
     if (e && e.preventDefault) e.preventDefault();
     const text = ((this.chat && this.chat.prompt$ && this.chat.prompt$.value) || '').trim();
     if (!text) return;
@@ -66,56 +66,56 @@ export class PromptForm extends LitElement {
     });
   }
 
-  render() {
+  render () {
     return html`
-      <form class="input-row" @submit=${this._onSubmit}>
+        <form class="input-row" @submit=${this._onSubmit}>
         <textarea
-          class="message-input"
-          .value=${(this.chat && this.chat.prompt$ && this.chat.prompt$.value) || ''}
-          @input=${this._onInput}
-          @keydown=${this._onKeyDown}
-          placeholder="Type a message... (Shift+Enter for newline)"
-          aria-label="Type a message"
-          rows="2"
+                class="message-input"
+                .value=${(this.chat && this.chat.prompt$ && this.chat.prompt$.value) || ''}
+                @input=${this._onInput}
+                @keydown=${this._onKeyDown}
+                placeholder="Type a message... (Shift+Enter for newline)"
+                aria-label="Type a message"
+                rows="2"
         ></textarea>
-        <button type="submit">Send</button>
-      </form>
+            <button type="submit">Send</button>
+        </form>
     `;
   }
 
-  static get styles() {
+  static get styles () {
     return css`
-      .input-row {
-          display: flex;
-          gap: 8px;
-          padding: 12px;
-          border-top: 1px solid rgba(0, 0, 0, 0.08);
-          background: rgba(0, 0, 0, 0.02);
-      }
+        .input-row {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            background: rgba(0, 0, 0, 0.02);
+        }
 
-      .message-input {
-          flex: 1 1 auto;
-          padding: 8px 10px;
-          border-radius: 6px;
-          border: 1px solid #ccc;
-          font-size: 14px;
-          resize: vertical;
-          min-height: 40px;
-          max-height: 160px;
-      }
+        .message-input {
+            flex: 1 1 auto;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 40px;
+            max-height: 160px;
+        }
 
-      button[type="submit"] {
-          padding: 8px 12px;
-          border-radius: 6px;
-          border: none;
-          background: #1976d2;
-          color: white;
-          cursor: pointer;
-      }
+        button[type="submit"] {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: none;
+            background: #1976d2;
+            color: white;
+            cursor: pointer;
+        }
 
-      button[type="submit"]:hover {
-          opacity: 0.95;
-      }
+        button[type="submit"]:hover {
+            opacity: 0.95;
+        }
     `;
   }
 }

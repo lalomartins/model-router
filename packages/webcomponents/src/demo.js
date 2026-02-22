@@ -24,25 +24,17 @@ export class RouterDemo extends LitElement {
     this.chat = new Chat([...dummyChat]);
   }
 
-  connectedCallback () {
-    super.connectedCallback();
-  }
-
-  disconnectedCallback () {
-    super.disconnectedCallback();
-  }
-
   firstUpdated () {
   }
 
   render () {
     return html`
-      <div class="page">
-        <div class="box">
-          <chat-history .chat=${this.chat}></chat-history>
-          <prompt-form .chat=${this.chat}></prompt-form>
+        <div class="page">
+            <div class="box">
+                <chat-history .chat=${this.chat}></chat-history>
+                <prompt-form .chat=${this.chat}></prompt-form>
+            </div>
         </div>
-      </div>
     `;
   }
 

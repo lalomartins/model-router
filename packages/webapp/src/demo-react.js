@@ -18,5 +18,5 @@ export const DemoReact = () => {
 
 DemoReact.displayName = 'RouterDemo';
 
-const root = createRoot(document.body);
+const root = createRoot(document.querySelector('main'));
 root.render(React.createElement(DemoReact));

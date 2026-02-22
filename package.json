@@ -5,6 +5,7 @@
   "workspaces": [
     "./packages/router",
     "./packages/webcomponents",
+    "./packages/react",
     "./packages/webapp"
   ],
   "private": true,

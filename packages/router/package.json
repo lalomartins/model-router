@@ -4,7 +4,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "vitest"
+    "test": "vitest --run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "vitest": "^4.0.18"

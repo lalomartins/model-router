@@ -31,8 +31,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests
-        run: npm test
+      - name: Setup Playwright
+        run: npx playwright install
 
       - name: Build storybook
         run: npm run build-storybook -w @model-router/webcomponents
+
+      - name: Run tests
+        run: npm test

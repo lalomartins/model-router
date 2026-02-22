@@ -8,7 +8,7 @@ describe('dummyModelAdapter', () => {
   });
 
   it('should return an Observable', () => {
-    const result = dummyModelAdapter('any-model', 'prompt');
+    const result = dummyModelAdapter(10)('any-model', 'prompt');
     expect(result).toBeDefined();
     expect(result.subscribe).toBeDefined();
   });
@@ -16,7 +16,7 @@ describe('dummyModelAdapter', () => {
   it('should emit at least one chunk and then complete', async () => {
     const chunks = [];
 
-    const adapter = dummyModelAdapter('m', 'p');
+    const adapter = dummyModelAdapter(10)('m', 'p');
 
     // Wait for completion via a promise so tests aren't dependent on arbitrary timeouts
     const done = new Promise((resolve, reject) => {
@@ -43,7 +43,7 @@ describe('dummyModelAdapter', () => {
   it('should support unsubscribe without throwing', async () => {
     const errorHandler = vi.fn();
 
-    const adapter = dummyModelAdapter('m', 'p');
+    const adapter = dummyModelAdapter(10)('m', 'p');
     const subscription = adapter.subscribe({
       next: () => {},
       error: errorHandler,

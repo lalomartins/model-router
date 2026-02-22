@@ -1,4 +1,6 @@
-import {selectModel} from './core.js';
+import {selectModel, adapters} from './core.js';
+import {BehaviorSubject, combineLatest} from 'rxjs';
+import {distinctUntilChanged, map, switchMap, take} from 'rxjs/operators';
 
 /*
  * A simplified version that works with globals, for very simple demos

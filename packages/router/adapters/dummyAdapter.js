@@ -1,33 +1,37 @@
-import {Observable} from 'rxjs';
+import {Observable, interval} from 'rxjs';
+import {map, zip} from 'rxjs/operators';
 
 // returns Observable that emits lorem ipsum in small chunks (simulates streaming)
-export function dummyModelAdapter (modelName, prompt) {
-  return new Observable(subscriber => {
-    const lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
-    const chunks = lorem.split(' ');
-    let cancelled = false;
+export function dummyModelAdapter (wordDelay = 45) {
+  return function (modelName, prompt) {
+    return new Observable(subscriber => {
+      const lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
+      const chunks = lorem.split(' ');
+      let cancelled = false;
 
-    // Emit all chunks in a microtask so tests and environments with fake timers don't
-    // block completion. This still provides async behavior but doesn't depend on setTimeout.
-    const scheduleMicrotask = typeof queueMicrotask === 'function'
-      ? queueMicrotask
-      : (fn) => Promise.resolve().then(fn);
+      // Emit all chunks in a microtask so tests and environments with fake timers don't
+      // block completion. This still provides async behavior but doesn't depend on setTimeout.
+      const scheduleMicrotask = typeof queueMicrotask === 'function'
+        ? queueMicrotask
+        : (fn) => Promise.resolve().then(fn);
 
-    scheduleMicrotask(() => {
-      if (cancelled) return;
-      try {
-        for (let i = 0; i < chunks.length; i++) {
-          if (cancelled) return;
-          subscriber.next(chunks[i] + (i < chunks.length - 1 ? ' ' : ''));
+      scheduleMicrotask(() => {
+        if (cancelled) return;
+        try {
+          for (let i = 0; i < chunks.length; i++) {
+            if (cancelled) return;
+            subscriber.next(chunks[i] + (i < chunks.length - 1 ? ' ' : ''));
+          }
+          if (!cancelled) subscriber.complete();
+        } catch (e) {
+          try { subscriber.error(e); } catch (__) {}
         }
-        if (!cancelled) subscriber.complete();
-      } catch (e) {
-        try { subscriber.error(e); } catch (__) {}
-      }
-    });
+      });
 
-    return () => {
-      cancelled = true;
-    };
-  });
+      return () => {
+        cancelled = true;
+      };
+    })
+      .pipe(zip(interval(wordDelay)), map(([chunk, _]) => chunk));
+  };
 }

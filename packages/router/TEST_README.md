@@ -28,7 +28,6 @@ npm test -- --coverage
   - BehaviorSubject updates (prompt$, mode$)
   - Model selection logic
   - runPrompt function with adapter integration
-  - fakeModelStream word streaming functionality
   - Adapters object
 
 - **adapters/httpAdapter.test.js** - Tests for HTTP adapter:

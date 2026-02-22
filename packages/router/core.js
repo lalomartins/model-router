@@ -13,9 +13,5 @@ export function selectModel (prompt, mode) {
 
 // Mock adapters object
 export const adapters = {
-  current: {run: dummyModelAdapter},
+  current: {run: dummyModelAdapter()},
 };
-
-export function fakeModelStream (text, wordDelay = 45) {
-  return of(text.split(' ')).pipe(zip(interval(wordDelay)), scan((acc, [word]) => acc + ' ' + word, ''));
-}
